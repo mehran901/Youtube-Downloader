@@ -908,8 +908,8 @@ def format_bytes(b):
 if __name__ == "__main__":
     print(f"Video Downloader Server v1.2")
     print(f"  URL: http://localhost:{PORT}")
-    print(f"  Default save dir: {DOWNLOAD_DIR}")
-    print(f"  Cookies: {'cookies.txt' if os.path.exists(COOKIES_FILE) else 'Chrome browser'}")
+    print(f"  Save location: chosen per-download via Save As dialog")
+    print(f"  Cookies: {'cookies.txt' if os.path.exists(COOKIES_FILE) else '(will sync from extension)'}")
     load_history()
     print()
     server = HTTPServer(("127.0.0.1", PORT), Handler)
