@@ -1,6 +1,8 @@
 __pycache__/
 *.pyc
 cookies.txt
+downloads.json
+test_dl/
 node_modules/
 .env
 *.log

@@ -5,6 +5,7 @@
   "description": "Download any video playing in Chrome",
   "permissions": [
     "activeTab",
+    "cookies",
     "downloads",
     "storage",
     "scripting",
