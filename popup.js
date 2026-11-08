@@ -11,11 +11,36 @@ let cookiesSynced = false;
 async function syncCookies() {
   if (cookiesSynced) return;
   try {
-    const [ytCookies, googleCookies] = await Promise.all([
-      chrome.cookies.getAll({ domain: "youtube.com" }),
-      chrome.cookies.getAll({ domain: "google.com" }),
-    ]);
-    const cookies = [...ytCookies, ...googleCookies];
+    const urls = [
+      "https://www.youtube.com/",
+      "https://youtube.com/",
+      "https://m.youtube.com/",
+      "https://music.youtube.com/",
+      "https://studio.youtube.com/",
+      "https://www.google.com/",
+      "https://accounts.google.com/",
+    ];
+    const queries = [];
+    for (const url of urls) {
+      // Non-partitioned
+      queries.push(chrome.cookies.getAll({ url }));
+      // Partitioned cookies (Chrome CHIPS)
+      queries.push(chrome.cookies.getAll({ url, partitionKey: {} }).catch(() => []));
+      queries.push(chrome.cookies.getAll({ url, partitionKey: { topLevelSite: url } }).catch(() => []));
+    }
+    const results = await Promise.all(queries);
+
+    const seen = new Set();
+    const cookies = [];
+    for (const list of results) {
+      for (const c of list) {
+        const key = `${c.name}|${c.domain}|${c.path}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          cookies.push(c);
+        }
+      }
+    }
     if (cookies.length === 0) return;
 
     const resp = await fetch(`${SERVER}/cookies`, {

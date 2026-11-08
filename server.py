@@ -738,7 +738,15 @@ class Handler(BaseHTTPRequestHandler):
                         downloads[did]["total_videos"] = int(m.group(2))
                         download_count = 0
                         current_item_merged = False
+                        current_item_title = ""  # Reset so new item doesn't inherit old title
                         continue
+
+                    # Capture YouTube video ID early (shown before Destination: line)
+                    # Format: [youtube] <id>: Downloading webpage
+                    yt_id_match = re.search(r'\[youtube\]\s+([^\s:]+):\s+Downloading webpage', line)
+                    if yt_id_match and not current_item_title:
+                        current_item_title = f"Video {downloads[did]['current_video']} ({yt_id_match.group(1)})"
+                        downloads[did]["current_title"] = current_item_title
 
                     # Get title of current playlist item
                     tm = re.search(r'\[youtube\]\s+\S+:\s+Downloading webpage', line)
